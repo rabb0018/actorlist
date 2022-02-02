@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actor List</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans&family=Srisakdi:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #2f2f2f;
+
+        }
+
+        img {
+            width: 100%;
+        }
+
+        header {
+            margin: auto;
+
+        }
+
+        #liste {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            max-width: 1000px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 1.5em;
+            margin: auto;
+        }
+
+        /* .actors {
+            padding: 1em;
+            border: 1px solid;
+            border-radius: 1em;
+        } */
+
+        nav {
+            text-align: center;
+            margin-bottom: 30px;
+
+        }
+
+        .valgt {
+            background-color: #eaeaea;
+            color: black;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #eaeaea;
+            font-family: 'Srisakdi', cursive;
+            font-size: 4rem;
+        }
+
+        h2 {
+            margin: auto;
+            width: 1000px;
+            margin-bottom: 30px;
+            color: #eaeaea;
+            font-family: 'PT Sans', sans-serif;
+            font-size: 2rem;
+        }
+
+        h3 {
+
+            color: #ffff89;
+            font-family: 'PT Sans', sans-serif;
+            font-size: 1.35rem;
+        }
+
+        .actors {
+            background-color: rgba(255, 255, 255, 0.17);
+            padding: 20px;
+            color: #eaeaea;
+            text-align: center;
+            border-radius: 5px 23px 70px 23px;
+            font-family: 'PT Sans', sans-serif;
+
+        }
+
+
+
+        button {
+            background-color: rgba(255, 255, 255, 0.17);
+            /* Green */
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+            font-family: 'PT Sans', sans-serif;
+        }
+
+
+        @media only screen and (max-width: 630px) {
+            button {
+
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+
+
+    <header>
+        <h1>Actor List</h1>
+        <nav>
+            <button data-movies="alle" class="valgt">Alle</button>
+            <button data-movies="Pulp Fiction">Pulp Fiction</button>
+            <button data-movies="Goodfellas">Goodfellas</button>
+            <button data-movies="Inception">Inception</button>
+            <button data-movies="Fight Club">Fight Club</button>
+        </nav>
+
+
+    </header>
+    <h2>Alle</h2>
+
+    <section id="liste"></section>
+
+    <template>
+        <article class="actors">
+            <h3 class="fullname"></h3>
+        </article>
+    </template>
+
+    <script>
+        const header = document.querySelector("header h2");
+        const myHeaders = {
+
+            "x-apikey": "61faaba9fd4d376be83fdfeb"
+        }
+
+        document.addEventListener("DOMContentLoaded", start);
+
+        let skuespillere;
+        let filter = "alle";
+
+        function start() {
+            console.log(start);
+
+            const filterKnapper = document.querySelectorAll("nav button");
+
+            filterKnapper.forEach(knap => knap.addEventListener("click", filtrerSkuespillere));
+
+            loadJSON();
+        }
+
+
+        function filtrerSkuespillere() {
+            console.log(filtrerSkuespillere);
+
+            filter = this.dataset.movies;
+
+            document.querySelector(".valgt").classList.remove("valgt");
+
+            this.classList.add("valgt");
+
+            visSkuespillere();
+            header.textContent = this.textContent;
+        }
+
+
+        async function loadJSON() {
+            const JSONData = await fetch("https://actorlist-b2ca.restdb.io/rest/actorlist", {
+                headers: myHeaders
+            });
+
+            skuespillere = await JSONData.json();
+            console.log("skuespillere", skuespillere);
+            visSkuespillere();
+
+        }
+
+        function visSkuespillere() {
+            console.log(visSkuespillere);
+
+            const dest = document.querySelector("#liste");
+            const skabelon = document.querySelector("template").content;
+
+            dest.textContent = "";
+            skuespillere.forEach(skuespiller => {
+
+                if (filter == skuespiller.movies || filter == "alle") {
+                    const klon = skabelon.cloneNode(true);
+
+                    klon.querySelector(".fullname").textContent = skuespiller.fullname;
+
+                    klon.querySelector(".actors").addEventListener("click", () => visDetaljer(skuespiller));
+                    dest.appendChild(klon);
+                }
+            })
+
+            function visDetaljer(hvilken) {
+                location.href = `detailSite.html?id=${hvilken._id}`;
+
+            }
+
+
+        }
+
+    </script>
+</body>
+
+</html>
